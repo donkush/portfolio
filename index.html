@@ -37,7 +37,7 @@ h2{font-family:var(--display);font-size:clamp(32px,4.4vw,52px);line-height:1.02;
 .work{display:grid;grid-template-columns:repeat(6,1fr);gap:20px}
 .tile{background:var(--card);border:1px solid var(--line);border-radius:18px;overflow:hidden;text-decoration:none;display:flex;flex-direction:column;transition:transform .2s ease,box-shadow .2s ease}
 .tile:hover{transform:translateY(-4px);box-shadow:0 18px 40px -20px rgba(27,26,23,.35)}
-.tile.a{grid-column:span 4}.tile.b{grid-column:span 2}.tile.c{grid-column:span 3}.tile.d{grid-column:span 3}
+.tile.a{grid-column:span 4}.tile.b{grid-column:span 2}.tile.c{grid-column:span 3}.tile.d{grid-column:span 6;flex-direction:row}.tile.d .shot{aspect-ratio:auto;flex:0 0 40%}
 .shot{aspect-ratio:16/9;display:grid;place-items:center;font-family:var(--display);font-size:clamp(26px,3vw,40px);color:#fff;padding:24px;text-align:center}
 .tile.b .shot{aspect-ratio:auto;flex:1}
 .s1{background:radial-gradient(circle at 20% 30%,#e9a23b 0,#c8562b 45%,#6e2410 100%)}
