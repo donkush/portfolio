@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Plainwork — Process Automation & Custom Platforms</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,600;1,6..72,400&family=Geist:wght@400;500;600&family=Geist+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f5f5f0;--ink:#121412;--muted:#55594f;--line:#d6d8cf;--accent:#2b50e0;--accent-soft:#e3e8fc;--card:#fff;
+  --serif:"Newsreader",Georgia,serif;--sans:"Geist",system-ui,sans-serif;--mono:"Geist Mono",monospace;--g:clamp(16px,4vw,48px)}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:17px/1.6 var(--sans)}
+.badge{display:block;background:#000;color:#fff;font-size:12px;padding:7px 12px;text-align:center;text-decoration:none}
+.wrap{max-width:1200px;margin:auto;padding:0 var(--g)}
+nav{display:flex;justify-content:space-between;align-items:center;padding:22px 0;border-bottom:1px solid var(--line)}
+.logo{display:flex;align-items:center;gap:10px;font-weight:600;font-size:19px;letter-spacing:-.01em;text-decoration:none;color:inherit}
+.mark{width:26px;height:26px;display:grid;grid-template-columns:1fr 1fr;gap:3px}
+.mark i{background:var(--ink);border-radius:2px}.mark i:nth-child(2){background:var(--accent);border-radius:50%}
+nav ul{display:flex;gap:28px;list-style:none;padding:0;font-size:15px}
+nav ul a{text-decoration:none;color:var(--muted)} nav ul a:hover{color:var(--ink)}
+.cta{background:var(--ink);color:var(--bg);padding:11px 20px;border-radius:8px;text-decoration:none;font-weight:500;font-size:15px;transition:background .15s}
+.cta:hover{background:var(--accent)}
+.hero{display:grid;grid-template-columns:7fr 5fr;gap:56px;padding:clamp(56px,9vw,120px) 0 72px;align-items:end}
+.eyebrow{font:500 13px var(--mono);color:var(--accent);letter-spacing:.06em;margin-bottom:20px}
+h1{font-family:var(--serif);font-weight:400;font-size:clamp(42px,6.2vw,82px);line-height:1.02;letter-spacing:-.025em}
+h1 em{color:var(--accent)}
+.hero p{color:var(--muted);font-size:19px;margin-bottom:28px}
+.swap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px;font-size:14px}
+.swap .row{display:grid;grid-template-columns:1fr 24px 1fr;align-items:center;gap:10px;padding:10px 0;border-bottom:1px dashed var(--line)}
+.swap .row:last-child{border:0}
+.swap s{color:#6e7168}.swap b{font-weight:600}.swap span{color:var(--accent);text-align:center}
+.swap h3{font:500 12px var(--mono);color:var(--muted);letter-spacing:.06em;margin-bottom:6px}
+section{padding:88px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--serif);font-weight:400;font-size:clamp(32px,4vw,50px);line-height:1.08;letter-spacing:-.02em;max-width:20ch;margin-bottom:44px}
+.services{display:grid;grid-template-columns:repeat(3,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.svc{background:var(--bg);padding:32px 28px;transition:background .2s}
+.svc:hover{background:var(--card)}
+.svc .n{font:500 13px var(--mono);color:var(--accent)}
+.svc h3{font-size:21px;font-weight:600;margin:14px 0 10px;letter-spacing:-.01em}
+.svc p{color:var(--muted);font-size:15px}
+.svc ul{margin-top:14px;padding-left:18px;font-size:14px;color:var(--muted)}
+.case{display:grid;grid-template-columns:5fr 7fr;gap:48px;align-items:start}
+.case blockquote{font-family:var(--serif);font-size:clamp(24px,2.6vw,32px);line-height:1.3;letter-spacing:-.01em}
+.case cite{display:block;font:500 13px var(--mono);color:var(--muted);margin-top:18px;font-style:normal}
+.metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:22px}
+.metric b{display:block;font-family:var(--serif);font-size:44px;font-weight:600;letter-spacing:-.02em;color:var(--accent)}
+.metric span{font-size:14px;color:var(--muted)}
+.process{display:grid;grid-template-columns:repeat(4,1fr);gap:28px}
+.process div{border-top:2px solid var(--ink);padding-top:16px}
+.process h3{font-size:17px;font-weight:600;margin:8px 0 6px}
+.process p{font-size:15px;color:var(--muted)}
+.process .n{font:500 13px var(--mono);color:var(--accent)}
+.contact{background:var(--ink);color:var(--bg);border-radius:20px;padding:clamp(36px,6vw,72px);display:grid;grid-template-columns:1.3fr 1fr;gap:40px;align-items:center;margin:88px 0}
+.contact h2{color:var(--bg);margin:0}
+.contact p{color:#b9bcb2;margin-bottom:22px}
+.contact .cta{background:var(--accent);color:#fff}.contact .cta:hover{background:#fff;color:var(--ink)}
+footer{padding:0 0 40px;font-size:13px;color:var(--muted);display:flex;justify-content:space-between;flex-wrap:wrap;gap:12px}
+a:focus-visible{outline:3px solid var(--accent);outline-offset:3px}
+@media (max-width:900px){
+  nav ul{display:none}
+  .hero,.case,.contact{grid-template-columns:1fr}
+  .services,.metrics{grid-template-columns:1fr}
+  .process{grid-template-columns:1fr 1fr}
+}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+</head>
+<body>
+<a class="badge" href="../index.html">← Portfolio: concept for an IT consultant</a>
+<div class="wrap">
+  <nav>
+    <a class="logo" href="#"><span class="mark" aria-hidden="true"><i></i><i></i><i></i><i></i></span>Plainwork</a>
+    <ul><li><a href="#services">Services</a></li><li><a href="#work">Work</a></li><li><a href="#process">Process</a></li></ul>
+    <a class="cta" href="#contact">Book a call</a>
+  </nav>
+
+  <header class="hero">
+    <div>
+      <div class="eyebrow">PROCESS AUTOMATION · CUSTOM PLATFORMS · BELGIUM</div>
+      <h1>Your team shouldn't run on <em>spreadsheets</em> and copy-paste.</h1>
+    </div>
+    <div>
+      <p>I help mid-sized organisations and non-profits replace fragile Excel workflows with tools that fit how they actually work, and connect the systems that don't talk to each other.</p>
+      <div class="swap" aria-label="Before and after examples">
+        <h3>WHAT CHANGES</h3>
+        <div class="row"><s>Excel passed by email</s><span>→</span><b>One shared platform</b></div>
+        <div class="row"><s>Re-typing data twice</s><span>→</span><b>Systems synced</b></div>
+        <div class="row"><s>Monthly report: 2 days</s><span>→</span><b>Live dashboard</b></div>
+      </div>
+    </div>
+  </header>
+
+  <section id="services">
+    <h2>Three ways I help organisations work calmer.</h2>
+    <div class="services">
+      <div class="svc"><span class="n">01</span><h3>Automate the busywork</h3><p>Find the repetitive steps eating your team's week and remove them.</p><ul><li>Workflow audits</li><li>Approvals & notifications</li><li>Document generation</li></ul></div>
+      <div class="svc"><span class="n">02</span><h3>Build internal tools</h3><p>Custom platforms and intranets designed around your process, not the other way round.</p><ul><li>Member & case management</li><li>Intranets & portals</li><li>Replacing legacy apps</li></ul></div>
+      <div class="svc"><span class="n">03</span><h3>Connect your systems</h3><p>Accounting, CRM, HR and forms, finally sharing one source of truth.</p><ul><li>API integrations</li><li>Data migration</li><li>Reporting & dashboards</li></ul></div>
+    </div>
+  </section>
+
+  <section id="work">
+    <div class="case">
+      <div>
+        <blockquote>"We went from five spreadsheets and a shared inbox to one system the whole team actually uses."</blockquote>
+        <cite>OPERATIONS LEAD · NON-PROFIT, 40 STAFF (sample testimonial)</cite>
+      </div>
+      <div class="metrics">
+        <div class="metric"><b>-70%</b><span>time spent on monthly reporting</span></div>
+        <div class="metric"><b>5→1</b><span>tools replaced by one platform</span></div>
+        <div class="metric"><b>6 wks</b><span>from audit to go-live</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="process">
+    <h2>A clear path, with no endless IT projects.</h2>
+    <div class="process">
+      <div><span class="n">WEEK 1</span><h3>Audit</h3><p>I map how work really flows today and where it breaks.</p></div>
+      <div><span class="n">WEEK 2</span><h3>Proposal</h3><p>A fixed scope and price, with the quickest wins first.</p></div>
+      <div><span class="n">WEEKS 3–6</span><h3>Build</h3><p>Short cycles; your team tests real software every week.</p></div>
+      <div><span class="n">AFTER</span><h3>Support</h3><p>Training, documentation and a direct line when you need it.</p></div>
+    </div>
+  </section>
+
+  <div class="contact" id="contact">
+    <h2>Tell me which process hurts most.</h2>
+    <div><p>A free 30-minute call. You'll leave with at least one thing you can automate this month, whether or not we work together.</p><a class="cta" href="#">Book a call →</a></div>
+  </div>
+  <footer><span>© 2026 Plainwork · Brand & site concept</span><span>NL · FR · EN</span></footer>
+</div>
+</body>
+</html>
