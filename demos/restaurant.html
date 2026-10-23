@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Ama's Kitchen — Order on WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=DM+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#fff7ec;--ink:#2a160b;--accent:#c8562b;--gold:#e9a23b;--leaf:#2f6b3a;--muted:#7a5d4a;--card:#fff;
+  --display:"Bricolage Grotesque",system-ui,sans-serif;--body:"DM Sans",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.55 var(--body)}
+.wrap{max-width:1080px;margin:auto;padding:0 16px}
+.top{display:flex;justify-content:space-between;align-items:center;padding:18px 0}
+.top b{font-family:var(--display);font-size:22px}
+.open{font-size:13px;background:#e3f1e3;color:var(--leaf);padding:5px 12px;border-radius:999px;font-weight:600}
+.hero{background:radial-gradient(circle at 85% 20%,var(--gold),var(--accent) 50%,#6e2410);color:#fff;border-radius:28px;padding:clamp(32px,6vw,72px);position:relative;overflow:hidden}
+.hero h1{font-family:var(--display);font-size:clamp(40px,7vw,84px);line-height:.92;letter-spacing:-.03em;max-width:11ch}
+.hero p{max-width:40ch;margin-top:16px;opacity:.92;font-size:18px}
+.hero .plate{position:absolute;right:-60px;bottom:-60px;width:280px;height:280px;border-radius:50%;background:conic-gradient(#f6d58b,#e07a3f,#8c2f12,#f6d58b);opacity:.55;filter:blur(1px)}
+h2{font-family:var(--display);font-size:32px;margin:48px 0 18px;letter-spacing:-.02em}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.tabs button{border:1.5px solid var(--ink);background:none;padding:8px 16px;border-radius:999px;font:600 14px var(--body);cursor:pointer}
+.tabs button[aria-pressed=true]{background:var(--ink);color:var(--bg)}
+.menu{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.dish{background:var(--card);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:6px;box-shadow:0 1px 0 #eadbc8}
+.dish .emoji{font-size:42px}
+.dish h3{font-size:18px}.dish p{color:var(--muted);font-size:14px;flex:1}
+.row{display:flex;justify-content:space-between;align-items:center;margin-top:8px}
+.price{font-family:var(--display);font-size:20px}
+.add{background:var(--accent);color:#fff;border:0;border-radius:999px;padding:8px 16px;font:600 14px var(--body);cursor:pointer;transition:transform .12s}
+.add:active{transform:scale(.95)}
+.cart{position:sticky;bottom:12px;margin:32px 0;background:var(--ink);color:var(--bg);border-radius:20px;padding:16px 20px;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.cart small{opacity:.7;display:block}
+.cart .wa{background:#25d366;color:#08311a;border:0;border-radius:999px;padding:12px 20px;font:700 15px var(--body);cursor:pointer}
+.cart .wa:disabled{opacity:.4;cursor:not-allowed}
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:16px;margin-bottom:48px}
+.info div{background:var(--card);border-radius:20px;padding:20px}
+.info b{display:block;font-family:var(--display);font-size:18px;margin-bottom:4px}
+.badge{position:fixed;top:12px;right:12px;background:#000;color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;opacity:.75;text-decoration:none}
+button:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+</style>
+</head>
+<body>
+<a class="badge" href="../index.html">← Portfolio demo</a>
+<div class="wrap">
+  <div class="top"><b>Ama's Kitchen</b><span class="open">● Open · delivery 30–45 min</span></div>
+  <div class="hero"><div class="plate"></div>
+    <h1>Jollof that starts arguments.</h1>
+    <p>Home-style Ghanaian food cooked fresh daily. Build your order below and it goes straight to our WhatsApp: no app, no sign-up.</p>
+  </div>
+
+  <h2>Menu</h2>
+  <div class="tabs" role="group" aria-label="Menu categories"></div>
+  <div class="menu" id="menu"></div>
+
+  <div class="cart" aria-live="polite">
+    <div><small id="count">Your order is empty</small><b id="total">GH₵ 0</b></div>
+    <button class="wa" id="send" disabled>Order on WhatsApp</button>
+  </div>
+
+  <div class="info">
+    <div><b>Where</b>East Legon, Accra: pick-up or delivery</div>
+    <div><b>Hours</b>Mon–Sat 10:00–21:00</div>
+    <div><b>Pay</b>MoMo or cash on delivery</div>
+  </div>
+</div>
+<script>
+const WHATSAPP_NUMBER = "233000000000"; // demo number
+const MENU = [
+  {id:1,cat:"Mains",emoji:"🍛",name:"Party Jollof + Chicken",desc:"Smoky jollof, grilled chicken, shito",price:85},
+  {id:2,cat:"Mains",emoji:"🍲",name:"Waakye Special",desc:"Waakye, gari, spaghetti, egg, wele",price:60},
+  {id:3,cat:"Mains",emoji:"🥘",name:"Banku & Tilapia",desc:"Grilled tilapia, pepper, onions",price:110},
+  {id:4,cat:"Mains",emoji:"🍚",name:"Fried Rice + Beef",desc:"Veg fried rice, spicy beef strips",price:75},
+  {id:5,cat:"Sides",emoji:"🍌",name:"Kelewele",desc:"Spiced fried plantain, peanuts",price:30},
+  {id:6,cat:"Sides",emoji:"🫘",name:"Red Red",desc:"Bean stew with fried plantain",price:45},
+  {id:7,cat:"Drinks",emoji:"🧃",name:"Sobolo",desc:"Chilled hibiscus, ginger",price:20},
+  {id:8,cat:"Drinks",emoji:"🥤",name:"Asaana",desc:"Caramelised corn drink",price:20},
+];
+const cart = new Map();
+let activeCat = "All";
+const fmt = n => "GH₵ " + n.toLocaleString();
+
+function renderTabs(){
+  const cats = ["All", ...new Set(MENU.map(d => d.cat))];
+  document.querySelector(".tabs").innerHTML = cats.map(c =>
+    `<button aria-pressed="${c===activeCat}" data-cat="${c}">${c}</button>`).join("");
+}
+function renderMenu(){
+  const items = MENU.filter(d => activeCat==="All" || d.cat===activeCat);
+  document.getElementById("menu").innerHTML = items.map(d => `
+    <div class="dish"><span class="emoji" aria-hidden="true">${d.emoji}</span><h3>${d.name}</h3><p>${d.desc}</p>
+    <div class="row"><span class="price">${fmt(d.price)}</span>
+    <button class="add" data-id="${d.id}">${cart.get(d.id) ? "+ Add (" + cart.get(d.id) + ")" : "+ Add"}</button></div></div>`).join("");
+}
+function renderCart(){
+  const lines = [...cart].map(([id,q]) => ({...MENU.find(d=>d.id===id), q}));
+  const items = lines.reduce((s,l)=>s+l.q,0);
+  const total = lines.reduce((s,l)=>s+l.q*l.price,0);
+  document.getElementById("count").textContent = items ? `${items} item${items>1?"s":""}` : "Your order is empty";
+  document.getElementById("total").textContent = fmt(total);
+  document.getElementById("send").disabled = !items;
+  return {lines,total};
+}
+document.addEventListener("click", e => {
+  const tab = e.target.closest("[data-cat]");
+  if (tab){ activeCat = tab.dataset.cat; renderTabs(); renderMenu(); }
+  const add = e.target.closest(".add");
+  if (add){ const id = +add.dataset.id; cart.set(id,(cart.get(id)||0)+1); renderMenu(); renderCart(); }
+});
+document.getElementById("send").addEventListener("click", () => {
+  const {lines,total} = renderCart();
+  const msg = "Hello Ama's Kitchen! I'd like to order:\n" +
+    lines.map(l=>`• ${l.q} × ${l.name} (${fmt(l.q*l.price)})`).join("\n") + `\nTotal: ${fmt(total)}`;
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(msg)}`, "_blank");
+});
+renderTabs(); renderMenu(); renderCart();
+</script>
+</body>
+</html>

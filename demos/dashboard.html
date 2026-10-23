@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sales Dashboard — CSV to Insights</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Inter+Tight:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f1a2a;--panel:#16243a;--line:#243756;--ink:#e8eef8;--muted:#8da2c0;--accent:#5ad1a0;--warn:#f2a65a;
+  --mono:"JetBrains Mono",monospace;--body:"Inter Tight",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0}
+body{background:var(--bg);color:var(--ink);font:15px/1.5 var(--body);padding:16px}
+.wrap{max-width:1180px;margin:auto}
+header{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;padding:18px 0 22px}
+h1{font-size:clamp(26px,4vw,40px);font-weight:800;letter-spacing:-.02em}
+h1 small{display:block;font:500 13px var(--mono);color:var(--accent);letter-spacing:.08em}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.actions button,.actions label{background:var(--panel);color:var(--ink);border:1px solid var(--line);border-radius:10px;padding:9px 14px;font:600 14px var(--body);cursor:pointer}
+.actions button:hover,.actions label:hover{border-color:var(--accent)}
+input[type=file]{display:none}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:16px}
+.kpi span{color:var(--muted);font-size:13px}
+.kpi b{display:block;font:700 clamp(22px,3vw,30px) var(--mono);margin-top:4px}
+.kpi.lead{background:linear-gradient(140deg,#1d4a3c,#16243a);border-color:#2b6b55}
+.grid{display:grid;grid-template-columns:2fr 1fr;gap:12px;margin-top:12px}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px}
+.panel h2{font-size:15px;color:var(--muted);font-weight:600;margin-bottom:14px}
+svg{width:100%;height:auto;display:block}
+.bars div{display:grid;grid-template-columns:110px 1fr 70px;gap:10px;align-items:center;margin-bottom:10px;font-size:14px}
+.bars i{display:block;height:10px;border-radius:6px;background:var(--accent)}
+.bars em{font:500 13px var(--mono);color:var(--muted);text-align:right;font-style:normal}
+textarea{width:100%;min-height:120px;background:#0b1422;color:var(--ink);border:1px solid var(--line);border-radius:12px;padding:12px;font:13px var(--mono)}
+.err{color:var(--warn);font-size:13px;margin-top:8px;min-height:1em}
+.badge{position:fixed;top:12px;right:12px;background:#000;color:#fff;font-size:12px;padding:6px 10px;border-radius:8px;opacity:.75;text-decoration:none}
+button:focus-visible,label:focus-within{outline:3px solid var(--accent);outline-offset:2px}
+@media (max-width:820px){.kpis{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<a class="badge" href="../index.html">← Portfolio demo</a>
+<div class="wrap">
+  <header>
+    <h1><small>SPREADSHEET → DASHBOARD</small>Sales overview</h1>
+    <div class="actions">
+      <button id="sample">Load sample data</button>
+      <label>Upload CSV<input type="file" id="file" accept=".csv,text/csv"></label>
+    </div>
+  </header>
+
+  <div class="kpis">
+    <div class="kpi lead"><span>Revenue</span><b id="kRev">—</b></div>
+    <div class="kpi"><span>Orders</span><b id="kOrd">—</b></div>
+    <div class="kpi"><span>Avg order</span><b id="kAvg">—</b></div>
+    <div class="kpi"><span>Best day</span><b id="kBest">—</b></div>
+  </div>
+
+  <div class="grid">
+    <div class="panel"><h2>Daily revenue</h2><svg id="chart" viewBox="0 0 700 260" role="img" aria-label="Daily revenue line chart"></svg></div>
+    <div class="panel"><h2>Top products</h2><div class="bars" id="bars"></div></div>
+  </div>
+
+  <div class="panel" style="margin-top:12px">
+    <h2>Or paste CSV (columns: date, product, qty, price)</h2>
+    <textarea id="csv" spellcheck="false"></textarea>
+    <div class="err" id="err"></div>
+  </div>
+</div>
+<script>
+const fmtMoney = n => "$" + Math.round(n).toLocaleString();
+
+function sampleCsv(){
+  const products = [["Shea butter",12],["Black soap",6],["Kente scarf",35],["Coffee 500g",14],["Tote bag",18]];
+  const rows = ["date,product,qty,price"];
+  const start = new Date(); start.setDate(start.getDate()-29);
+  let seed = 7; const rnd = () => (seed = (seed*9301+49297)%233280)/233280;
+  for (let d=0; d<30; d++){
+    const day = new Date(start); day.setDate(start.getDate()+d);
+    const n = 3 + Math.floor(rnd()*6 + d/8);
+    for (let i=0;i<n;i++){ const [p,price] = products[Math.floor(rnd()*products.length)];
+      rows.push(`${day.toISOString().slice(0,10)},${p},${1+Math.floor(rnd()*3)},${price}`); }
+  }
+  return rows.join("\n");
+}
+
+function parse(text){
+  const lines = text.trim().split(/\r?\n/).filter(Boolean);
+  if (lines.length < 2) throw new Error("Need a header row plus at least one data row.");
+  const head = lines[0].toLowerCase().split(",").map(s=>s.trim());
+  const idx = k => head.indexOf(k);
+  for (const k of ["date","product","qty","price"]) if (idx(k)<0) throw new Error(`Missing column: ${k}`);
+  return lines.slice(1).map((l,n) => {
+    const c = l.split(",");
+    const row = {date:c[idx("date")]?.trim(), product:c[idx("product")]?.trim(), qty:+c[idx("qty")], price:+c[idx("price")]};
+    if (!row.date || !row.product || !isFinite(row.qty) || !isFinite(row.price)) throw new Error(`Row ${n+2} is invalid.`);
+    return row;
+  });
+}
+
+function render(rows){
+  const byDay = new Map(), byProd = new Map();
+  let rev = 0;
+  for (const r of rows){ const v = r.qty*r.price; rev += v;
+    byDay.set(r.date,(byDay.get(r.date)||0)+v); byProd.set(r.product,(byProd.get(r.product)||0)+v); }
+  const days = [...byDay].sort((a,b)=>a[0].localeCompare(b[0]));
+  const best = days.reduce((m,d)=>d[1]>m[1]?d:m, days[0]);
+  document.getElementById("kRev").textContent = fmtMoney(rev);
+  document.getElementById("kOrd").textContent = rows.length.toLocaleString();
+  document.getElementById("kAvg").textContent = fmtMoney(rev/rows.length);
+  document.getElementById("kBest").textContent = best[0].slice(5);
+
+  const W=700,H=260,P=30, max=Math.max(...days.map(d=>d[1]));
+  const x = i => P + i*(W-2*P)/Math.max(days.length-1,1), y = v => H-P - v/max*(H-2*P);
+  const pts = days.map((d,i)=>`${x(i)},${y(d[1])}`).join(" ");
+  const grid = [0,.5,1].map(f=>`<line x1="${P}" x2="${W-P}" y1="${y(max*f)}" y2="${y(max*f)}" stroke="#243756"/><text x="0" y="${y(max*f)+4}" fill="#8da2c0" font-size="11" font-family="JetBrains Mono">${fmtMoney(max*f)}</text>`).join("");
+  document.getElementById("chart").innerHTML = `${grid}
+    <polygon points="${P},${H-P} ${pts} ${x(days.length-1)},${H-P}" fill="rgba(90,209,160,.15)"/>
+    <polyline points="${pts}" fill="none" stroke="#5ad1a0" stroke-width="2.5" stroke-linejoin="round"/>`;
+
+  const prods = [...byProd].sort((a,b)=>b[1]-a[1]).slice(0,6), pmax = prods[0][1];
+  document.getElementById("bars").innerHTML = prods.map(([p,v]) =>
+    `<div><span>${p.replace(/</g,"&lt;")}</span><i style="width:${v/pmax*100}%"></i><em>${fmtMoney(v)}</em></div>`).join("");
+}
+
+function load(text){
+  const err = document.getElementById("err");
+  try { render(parse(text)); err.textContent = ""; }
+  catch(e){ err.textContent = e.message; }
+}
+const ta = document.getElementById("csv");
+document.getElementById("sample").onclick = () => { ta.value = sampleCsv(); load(ta.value); };
+ta.addEventListener("input", () => load(ta.value));
+document.getElementById("file").addEventListener("change", e => {
+  const f = e.target.files[0]; if (!f) return;
+  f.text().then(t => { ta.value = t; load(t); });
+});
+ta.value = sampleCsv(); load(ta.value);
+</script>
+</body>
+</html>
